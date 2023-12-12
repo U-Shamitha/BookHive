@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon src/app",
-    "build": "react-scripts build",
+    "build": "npm i",
     "lint": "prettier --write ."
   },
   "dependencies": {
