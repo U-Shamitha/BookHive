@@ -1,6 +1,8 @@
+const serverUrl = "https://bookhive-fe.onrender.com"
+
 const UserApi = {
   borrowBook: async (isbn, userId) => {
-    const res = await fetch("/v1/user/borrow", {
+    const res = await fetch(`${serverUrl}/v1/user/borrow`, {
       method: "POST",
       body: JSON.stringify({ isbn, userId }),
       headers: { "Content-Type": "application/json" },
@@ -36,7 +38,7 @@ const UserApi = {
     return res.json()
   },
   register: async (username, password, role) => {
-    const res = await fetch("/v1/user/register", {
+    const res = await fetch(`${serverUrl}/v1/user/register`, {
       method: "POST",
       body: JSON.stringify({ username, password, role}),
       headers: { "Content-Type": "application/json" },
@@ -44,7 +46,7 @@ const UserApi = {
     return res.json()
   },
   login: async (username, password) => {
-    const res = await fetch("/v1/user/login", {
+    const res = await fetch(`${serverUrl}/v1/user/login`, {
       method: "POST",
       body: JSON.stringify({ username, password }),
       headers: { "Content-Type": "application/json" },
