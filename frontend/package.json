@@ -9,7 +9,7 @@
     "eject": "react-scripts eject",
     "lint": "prettier --write ."
   },
-  "proxy": "http://localhost:8080",
+  "proxy": "https://bookhive-fe.onrender.com",
   "dependencies": {
     "@emotion/react": "^11.9.3",
     "@emotion/styled": "^11.9.3",
