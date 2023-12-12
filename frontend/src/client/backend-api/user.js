@@ -49,6 +49,7 @@ const UserApi = {
       body: JSON.stringify({ username, password }),
       headers: { "Content-Type": "application/json" },
     })
+    console.log(res)
     return res.json()
   },
   getProfile: async () => {
