@@ -18,6 +18,13 @@ const app = express()
 const server = http.createServer(app);
 const io = socketIO(server);
 
+app.use(morgan("dev"))
+app.use(express.json())
+app.use(cookieParser())
+app.use(express.urlencoded({ extended: false }))
+app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
+credentials: true,}))
+
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
@@ -30,12 +37,6 @@ io.on('connection', (socket) => {
   });
 });
 
-app.use(morgan("dev"))
-app.use(express.json())
-app.use(cookieParser())
-app.use(express.urlencoded({ extended: false }))
-app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
-credentials: true,}))
 
 const sessionStore = new MongoDBStore({
   // MongoDB connection options
