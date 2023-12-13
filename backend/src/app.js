@@ -21,7 +21,7 @@ app.use(cors())
 
 const sessionStore = new MongoDBStore({
   // MongoDB connection options
-  uri: process.env.DB_URI+"/"+process.env.DB_NAME,
+  uri: process.env.DB_URI,
   collection: 'sessions', // Optional, the collection name for sessions
   expires: 1000 * 60 * 60 * 24 * 7, // Optional, session expiration in milliseconds (7 days in this example)
   connectionOptions: {
@@ -31,7 +31,7 @@ const sessionStore = new MongoDBStore({
 });
 
 // Catch errors in the store initialization
-store.on('error', function (error) {
+sessionStore.on('error', function (error) {
   console.error('MongoDB store error:', error);
 });
 
@@ -42,7 +42,7 @@ app.use(
     secret: process.env.SESSION_SECRET,
     saveUninitialized: true,
     // cookie: { maxAge: 1000 * 60 * 60 * 24 },
-    cookie: { httpOnly: true, secure: true, maxAge: 1000 * 60 * 60 * 48, sameSite: 'none' },
+    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'none' },
     resave: true,
   })
 )
