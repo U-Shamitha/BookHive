@@ -13,6 +13,7 @@ const { connectDb } = require("./db")
 const { UserModel } = require("./models/user")
 
 const http = require('http');
+const socketIO = require('socket.io');
 const app = express()
 const server = http.createServer(app);
 const io = socketIO(server);
