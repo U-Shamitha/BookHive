@@ -18,6 +18,11 @@ import { BackendApi } from "../../client/backend-api"
 import classes from "./styles.module.css"
 import { NotificationManager } from "react-notifications"
 
+import io from 'socket.io-client';
+
+const serverUrl = "https://bookhive-fe.onrender.com"
+const socket = io(serverUrl);
+
 dayjs.extend(utc)
 
 export const BookForm = () => {
@@ -114,6 +119,18 @@ export const BookForm = () => {
             }
         }
     }
+
+    useEffect(() => {
+        // Listen for new borrow requests
+        socket.on('newBorrowRequest', (data) => {
+            navigate(0);
+        });
+    
+        // Clean up the event listener
+        return () => {
+          socket.off('newBorrowRequest');
+        };
+      }, []);
 
     useEffect(() => {
         if (bookIsbn) {

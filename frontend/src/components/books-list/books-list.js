@@ -21,6 +21,8 @@ import { BackendApi } from "../../client/backend-api"
 import { useUser } from "../../context/user-context"
 import classes from "./styles.module.css"
 
+import io from 'socket.io-client';
+
 export const BooksList = () => {
 
     const [books, setBooks] = useState([]);
@@ -31,6 +33,14 @@ export const BooksList = () => {
     const [openModal, setOpenModal] = useState(false)
     const { isAdmin, user } = useUser()
     const [activeTab, setActiveTab] = useState('book-list')
+
+    const serverUrl = "https://bookhive-fe.onrender.com"
+    const socket = io(serverUrl);
+
+    const sendRefreshRequest = () => {
+        // Emit the borrow request to the server
+        socket.emit('borrowRequest', user._id);
+      };
 
 
     const fetchBooks = async () => {
@@ -56,12 +66,14 @@ export const BooksList = () => {
     const acceptBorrow = async(isbn, userId, borrowReqId) =>{
         await BackendApi.user.acceptBorrow(isbn, userId, borrowReqId).then(({success})=>{
             fetchBooks().catch(console.error)
+            sendRefreshRequest()
         })
     }
 
     const acceptReturn = async(isbn, userId, borrowReqId) =>{
         await BackendApi.user.acceptReturn(isbn, userId, borrowReqId).then(({success})=>{
             fetchBooks().catch(console.error)
+            sendRefreshRequest()
         })
     }
 

@@ -36,7 +36,7 @@ export const Book = () => {
     const [chartOptions, setChartOptions] = useState(null)
     const [openTab, setOpenTab] = useState(0)
 
-    const sendBorrowRequest = () => {
+    const sendRefreshRequest = () => {
         // Emit the borrow request to the server
         socket.emit('borrowRequest', user._id);
       };
@@ -50,7 +50,7 @@ export const Book = () => {
                         NotificationManager.error(error)
                     } else {
                         setBook(book)
-                        sendBorrowRequest()
+                        sendRefreshRequest()
                     }
                 })
                 .catch(console.error)
@@ -66,6 +66,7 @@ export const Book = () => {
                         NotificationManager.error(error)
                     } else {
                         setBook(book)
+                        sendRefreshRequest()
                     }
                 })
                 .catch(console.error)
