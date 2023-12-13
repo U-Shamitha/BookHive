@@ -198,7 +198,8 @@ router.post("/accept-return", async (req, res, next) => {
 router.get("/borrowed-books", async (req, res, next) => {
   try {
     console.log(req.session)
-    console.log(req.session.userId)
+    console.log("userId",req.session.userId)
+    console.log("sessionId", req.sessionID)
     const result = await BookModel.find({ "borrowedBy": { "$in": req.session.userId } })
     return res.status(200).json({ books:  result.map((book) => ({
       ...book.toJSON(),
@@ -251,7 +252,9 @@ router.post("/login", async (req, res, next) => {
       return res.status(400).json({ error: "Invalid password" })
     }
     console.log("user.id", user.id)
+    console.log(req.sessionID)
     req.session.userId = user.id
+    console.log("login session", req.session)
     return res.status(200).json({ user: omitPassword(user.toJSON()) })
   } catch (err) {
     next(err)

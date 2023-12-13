@@ -17,7 +17,8 @@ app.use(morgan("dev"))
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
-app.use(cors())
+app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
+credentials: true,}))
 
 const sessionStore = new MongoDBStore({
   // MongoDB connection options
@@ -35,14 +36,15 @@ sessionStore.on('error', function (error) {
   console.error('MongoDB store error:', error);
 });
 
-
+app.set('trust proxy', 1)
 app.use(
   sessions({
+    name: 'connect.sid',
     store: sessionStore,
     secret: process.env.SESSION_SECRET,
-    saveUninitialized: true,
+    saveUninitialized: false,
     // cookie: { maxAge: 1000 * 60 * 60 * 24 },
-    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'none' },
+    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'None', secure:true},
     resave: false,
   })
 )
