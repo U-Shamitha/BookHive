@@ -197,6 +197,8 @@ router.post("/accept-return", async (req, res, next) => {
 
 router.get("/borrowed-books", async (req, res, next) => {
   try {
+    console.log(req.session)
+    console.log(req.session.userId)
     const result = await BookModel.find({ "borrowedBy": { "$in": req.session.userId } })
     return res.status(200).json({ books:  result.map((book) => ({
       ...book.toJSON(),
