@@ -76,7 +76,16 @@ export const Book = () => {
     useEffect(() => {
         // Listen for new borrow requests
         socket.on('newBorrowRequest', (data) => {
-            navigate(0);
+            BackendApi.book
+                .getBookByIsbn(bookIsbn)
+                .then(({ book, error }) => {
+                    if (error) {
+                        NotificationManager.error(error)
+                    } else {
+                        setBook(book)
+                    }
+                })
+                .catch(console.error)
         });
     
         // Clean up the event listener

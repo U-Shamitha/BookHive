@@ -123,7 +123,13 @@ export const BookForm = () => {
     useEffect(() => {
         // Listen for new borrow requests
         socket.on('newBorrowRequest', (data) => {
-            navigate(0);
+            BackendApi.book.getBookByIsbn(bookIsbn).then(({ book, error }) => {
+                if (error) {
+                    navigate("/")
+                } else {
+                    setBook(book)
+                }
+            })
         });
     
         // Clean up the event listener

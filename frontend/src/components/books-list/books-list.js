@@ -78,6 +78,19 @@ export const BooksList = () => {
     }
 
     useEffect(() => {
+        // Listen for new borrow requests
+        socket.on('newBorrowRequest', (data) => {
+            fetchBooks().catch(console.error)
+            fetchUserBook().catch(console.error)
+        });
+    
+        // Clean up the event listener
+        return () => {
+          socket.off('newBorrowRequest');
+        };
+      }, []);
+
+    useEffect(() => {
         fetchBooks().catch(console.error)
         fetchUserBook().catch(console.error)
     }, [user])
