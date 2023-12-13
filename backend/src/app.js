@@ -22,13 +22,15 @@ app.use(morgan("dev"))
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
-app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
-credentials: true,}))
+app.use(cors())
+// app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
+// credentials: true,}))
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   socket.on('borrowRequest', (data) => {
+    console.log("data",data)
     io.emit('newBorrowRequest', data);
   });
 
