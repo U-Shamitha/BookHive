@@ -18,8 +18,14 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 
+const sessionStore = new MongoStore({
+  // MongoDB connection options
+  url: process.env.DB_URI+"/"+process.env.DB_NAME,
+});
+
 app.use(
   sessions({
+    store: sessionStore,
     secret: process.env.SESSION_SECRET,
     saveUninitialized: true,
     // cookie: { maxAge: 1000 * 60 * 60 * 24 },
