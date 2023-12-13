@@ -38,6 +38,7 @@ export const Book = () => {
 
     const sendRefreshRequest = () => {
         // Emit the borrow request to the server
+        console.log("emitting refresh req", user._id)
         socket.emit('borrowRequest', user._id);
       };
 
