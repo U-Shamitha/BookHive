@@ -301,6 +301,7 @@ export const BooksList = () => {
 
 
             {/* List of borrowed books shown to customer */}
+            {console.log(borrowedBook)}
             {
                 user && !isAdmin && activeTab == "borrowed-books" && (
                     <>
