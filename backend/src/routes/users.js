@@ -134,7 +134,7 @@ router.post("/return", async (req, res, next) => {
     return res.status(200).json({
       book: {
         ...updatedBook.toJSON(),
-        // availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
+        availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
       },
     })
   } catch (err) {
