@@ -22,9 +22,16 @@ app.use(morgan("dev"))
 app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
-app.use(cors())
+// Update the cors options to allow your React app's origin
+const corsOptions = {
+  origin: 'https://bookhive-oab8.onrender.com',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 // app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
 // credentials: true,}))
+app.use(cors(corsOptions));
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
