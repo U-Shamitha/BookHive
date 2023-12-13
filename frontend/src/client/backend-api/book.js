@@ -3,11 +3,11 @@ const serverUrl = "http://localhost:8080"
 
 const BookApi = {
   getAllBooks: async () => {
-    const res = await fetch(`${serverUrl}/v1/book`, { method: "GET" })
+    const res = await fetch(`${serverUrl}/v1/book`, { method: "GET", credentials:'include' })
     return res.json()
   },
   getBookByIsbn: async (bookIsbn) => {
-    const res = await fetch(`${serverUrl}/v1/book/${bookIsbn}`, { method: "GET" })
+    const res = await fetch(`${serverUrl}/v1/book/${bookIsbn}`, { method: "GET", credentials:'include' })
     return res.json()
   },
   addBook: async (data) => {
@@ -15,6 +15,7 @@ const BookApi = {
       method: "POST",
       body: JSON.stringify(data),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     return res.json()
   },
@@ -23,11 +24,12 @@ const BookApi = {
       method: "PATCH",
       body: JSON.stringify(data),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     return res.json()
   },
   deleteBook: async (bookIsbn) => {
-    const res = await fetch(`${serverUrl}/v1/book/${bookIsbn}`, { method: "DELETE" })
+    const res = await fetch(`${serverUrl}/v1/book/${bookIsbn}`, { method: "DELETE", credentials:'include' })
     return res.json()
   },
 }

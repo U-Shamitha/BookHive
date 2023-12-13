@@ -7,7 +7,9 @@ const UserApi = {
       method: "POST",
       body: JSON.stringify({ isbn, userId }),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
+    
     return res.json()
   },
   acceptBorrow: async (isbn, userId, borrowReqId) => {
@@ -15,6 +17,7 @@ const UserApi = {
       method: "POST",
       body: JSON.stringify({ isbn, userId, borrowReqId}),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     return res.json()
   },
@@ -23,6 +26,7 @@ const UserApi = {
       method: "POST",
       body: JSON.stringify({ isbn, userId }),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     return res.json()
   },
@@ -31,11 +35,12 @@ const UserApi = {
       method: "POST",
       body: JSON.stringify({ isbn, userId }),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     return res.json()
   },
   getBorrowBook: async () => {
-    const res = await fetch(`${serverUrl}/v1/user/borrowed-books`, { method: "GET" })
+    const res = await fetch(`${serverUrl}/v1/user/borrowed-books`, { method: "GET", credentials:'include'})
     console.log("res",res);
     return res.json()
   },
@@ -44,6 +49,7 @@ const UserApi = {
       method: "POST",
       body: JSON.stringify({ username, password, role}),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     return res.json()
   },
@@ -52,16 +58,17 @@ const UserApi = {
       method: "POST",
       body: JSON.stringify({ username, password }),
       headers: { "Content-Type": "application/json" },
+      credentials:'include'
     })
     console.log(res)
     return res.json()
   },
   getProfile: async () => {
-    const res = await fetch(`${serverUrl}/v1/user/profile`, { method: "GET" })
+    const res = await fetch(`${serverUrl}/v1/user/profile`, { method: "GET", credentials:'include'})
     return res.json()
   },
   logout: async () => {
-    const res = await fetch(`${serverUrl}/v1/user/logout`, { method: "GET" })
+    const res = await fetch(`${serverUrl}/v1/user/logout`, { method: "GET", credentials:'include' })
     return res.json()
   },
 }
