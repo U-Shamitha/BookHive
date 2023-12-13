@@ -23,6 +23,11 @@ import { TabPanel } from "../tabs/tab"
 import { makeChartOptions } from "./chart-options"
 import classes from "./styles.module.css"
 
+import io from 'socket.io-client';
+
+const serverUrl = "https://bookhive-fe.onrender.com"
+const socket = io(serverUrl);
+
 export const Book = () => {
     const { bookIsbn } = useParams()
     const { user, isAdmin } = useUser()
@@ -30,6 +35,11 @@ export const Book = () => {
     const [book, setBook] = useState(null)
     const [chartOptions, setChartOptions] = useState(null)
     const [openTab, setOpenTab] = useState(0)
+
+    const sendBorrowRequest = () => {
+        // Emit the borrow request to the server
+        socket.emit('borrowRequest', user._id);
+      };
 
     const borrowBook = () => {
         if (book && user) {
@@ -40,6 +50,7 @@ export const Book = () => {
                         NotificationManager.error(error)
                     } else {
                         setBook(book)
+                        sendBorrowRequest()
                     }
                 })
                 .catch(console.error)
@@ -60,6 +71,18 @@ export const Book = () => {
                 .catch(console.error)
         }
     }
+
+    useEffect(() => {
+        // Listen for new borrow requests
+        socket.on('newBorrowRequest', (data) => {
+            navigate(0);
+        });
+    
+        // Clean up the event listener
+        return () => {
+          socket.off('newBorrowRequest');
+        };
+      }, []);
 
     useEffect(() => {
         if (bookIsbn) {
