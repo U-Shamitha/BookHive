@@ -12,6 +12,7 @@ const { apiV1 } = require("./routes")
 const { connectDb } = require("./db")
 const { UserModel } = require("./models/user")
 
+const http = require('http');
 const app = express()
 const server = http.createServer(app);
 const io = socketIO(server);
