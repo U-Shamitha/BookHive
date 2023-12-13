@@ -6,6 +6,7 @@ const express = require("express")
 const morgan = require("morgan")
 const cookieParser = require("cookie-parser")
 const sessions = require("express-session")
+const MongoDBStore = require('connect-mongodb-session')(session);
 const { apiV1 } = require("./routes")
 const { connectDb } = require("./db")
 const { UserModel } = require("./models/user")
@@ -18,10 +19,22 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 app.use(cors())
 
-const sessionStore = new MongoStore({
+const sessionStore = new MongoDBStore({
   // MongoDB connection options
-  url: process.env.DB_URI+"/"+process.env.DB_NAME,
+  uri: process.env.DB_URI+"/"+process.env.DB_NAME,
+  collection: 'sessions', // Optional, the collection name for sessions
+  expires: 1000 * 60 * 60 * 24 * 7, // Optional, session expiration in milliseconds (7 days in this example)
+  connectionOptions: {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  },
 });
+
+// Catch errors in the store initialization
+store.on('error', function (error) {
+  console.error('MongoDB store error:', error);
+});
+
 
 app.use(
   sessions({
