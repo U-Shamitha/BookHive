@@ -3,6 +3,7 @@ const cors = require('cors')
 dotenv.config()
 
 const express = require("express")
+
 const morgan = require("morgan")
 const cookieParser = require("cookie-parser")
 const sessions = require("express-session")
@@ -12,6 +13,20 @@ const { connectDb } = require("./db")
 const { UserModel } = require("./models/user")
 
 const app = express()
+const server = http.createServer(app);
+const io = socketIO(server);
+
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  socket.on('borrowRequest', (data) => {
+    io.emit('newBorrowRequest', data);
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
 
 app.use(morgan("dev"))
 app.use(express.json())
@@ -72,7 +87,7 @@ connectDb()
     }
   })
   .then(() => {
-    app.listen(8080, () => console.log("Server is listening on http://localhost:8080"))
+    server.listen(8080, () => console.log("Server is listening on http://localhost:8080"))
   })
   .catch((err) => {
     console.error("Failed to connect to database", err)
