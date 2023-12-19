@@ -1,5 +1,7 @@
 .wrapper {
-    max-width: 600;
+    /* display: flex; */
+    width: 80% !important;
+    max-width: 800px !important;
     margin: 25px auto 0;
     padding: 2em;
 }

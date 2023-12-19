@@ -4,6 +4,10 @@ import { Container } from "@mui/material"
 import { NotificationContainer } from "react-notifications"
 import { AppLayout } from "./components/layout/app-layout"
 import { UserProvider } from "./context/user-context"
+import io from 'socket.io-client'
+import { serverUrl } from "./urls/serverDetails"
+
+export const socket = io(serverUrl);
 
 export const App = () => (
   <UserProvider>

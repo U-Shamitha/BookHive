@@ -77,7 +77,7 @@ export const AppLayout = () => {
         <div style={{marginTop:'80px'}}>
             <AppBar>
                 <Container maxWidth="xl">
-                    <Toolbar disableGutters isSticky='true'>
+                    <Toolbar disableGutters issticky='true'>
                         <AdbIcon sx={{ display: "flex", mr: 1 }} />
                         <Link to="/" style={{ textDecoration: "none", flexGrow: 1 }}>
                             <Typography

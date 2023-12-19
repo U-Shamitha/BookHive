@@ -14,3 +14,17 @@
 .btnContainer>* {
     margin: 10px;
 }
+
+.tabScrollView {
+    overflow: auto;
+}
+
+.scrollView {
+    max-height: 320px !important;
+    overflow: auto;
+    /* border: 1px solid #ccc;  */
+}
+
+  
+  
+  

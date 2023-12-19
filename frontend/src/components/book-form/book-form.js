@@ -18,10 +18,9 @@ import { BackendApi } from "../../client/backend-api"
 import classes from "./styles.module.css"
 import { NotificationManager } from "react-notifications"
 
-import io from 'socket.io-client';
+import { socket } from "../../App"
+import { useUser } from "../../context/user-context"
 
-const serverUrl = "https://bookhive-fe.onrender.com"
-const socket = io(serverUrl);
 
 dayjs.extend(utc)
 
@@ -44,6 +43,13 @@ export const BookForm = () => {
         price: "",
         quantity: "",
     })
+    const { isAdmin, user } = useUser()
+
+
+    const sendRefreshRequest = () => {
+        // Emit the borrow request to the server
+        socket.emit('borrowRequest', user._id);
+      };
 
     const isInvalid =
         book.name.trim() === "" || book.isbn.trim() === "" || book.category.trim() === ""
@@ -90,6 +96,7 @@ export const BookForm = () => {
                         }else{
                             NotificationManager.success("New Book Added Successfully")
                         }
+                        sendRefreshRequest()
                     }
                     )
             }

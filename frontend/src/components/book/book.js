@@ -15,7 +15,9 @@ import {
     TableCell,
     TableRow,
     TableHead,
+    IconButton
 } from "@mui/material"
+import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { NotificationManager } from "react-notifications"
 import { BackendApi } from "../../client/backend-api"
 import { useUser } from "../../context/user-context"
@@ -23,10 +25,7 @@ import { TabPanel } from "../tabs/tab"
 import { makeChartOptions } from "./chart-options"
 import classes from "./styles.module.css"
 
-import io from 'socket.io-client';
-
-const serverUrl = "https://bookhive-fe.onrender.com"
-const socket = io(serverUrl);
+import { socket } from "../../App"
 
 export const Book = () => {
     const { bookIsbn } = useParams()
@@ -118,7 +117,14 @@ export const Book = () => {
                     Book Details
                 </Typography>
                 <Card sx={{padding:'10px'}}>
+                    <div style={{display:'flex'}}>
+                    <IconButton onClick={() => setOpenTab((pT)=> pT-1)} disabled={openTab === 0}>
+                    <KeyboardArrowLeft />
+                    </IconButton>
                     <Tabs
+                        // variant="scrollable"
+                        scrollButtons="auto"
+                        aria-label="Horizontal Tabs Scrollable"
                         value={openTab}
                         indicatorColor="primary"
                         textColor="primary"
@@ -140,7 +146,10 @@ export const Book = () => {
                         <Tab label="Quantity History" tabIndex={2} />
                         <Tab label="Borrow History" tabIndex={3} />
                     </Tabs>
-
+                    <IconButton onClick={() => setOpenTab((pT)=> pT+1)} disabled={openTab === 3}>
+                        <KeyboardArrowRight />
+                    </IconButton>
+                    </div>
                     <TabPanel value={openTab} index={0}>
                         <CardContent>
                             <Table>
@@ -188,6 +197,7 @@ export const Book = () => {
 
                     <TabPanel value={openTab} index={3}>
                         <CardContent>
+                            <div className={`${classes.scrollView}`}>
                             <Table>
                                 <TableHead>
                                     <TableCell>Borrower</TableCell>
@@ -195,7 +205,7 @@ export const Book = () => {
                                     <TableCell>Returned On</TableCell>
                                 </TableHead>
                                 <TableBody>
-                                    {book.borrowedBy2.map((borrowDetail) =>
+                                    {book.borrowedBy2.slice().reverse().map((borrowDetail) =>
                                     (borrowDetail.status=='accepted') ?
                                         <TableRow>                                            
                                             <TableCell>{borrowDetail['borrowerName']}</TableCell>
@@ -206,7 +216,8 @@ export const Book = () => {
                                     null
                                     )}
                                 </TableBody>
-                            </Table>
+                                </Table>
+                                </div>
                         </CardContent>
                     </TabPanel>
 

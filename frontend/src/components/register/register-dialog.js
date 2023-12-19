@@ -64,11 +64,11 @@ export const RegisterDialog = ({ open, handleClose, handleSubmit }) => {
                 <div style={{marginTop:"10px", display:'flex', justifyContent:'space-evenly'}}>
                     <span>
                         <input type="radio" id="admin" name="role" value="admin" style={{accentColor:"#0000FF"}} checked={role==="admin"} onChange={()=>setRole("admin")}/>
-                        <label for="admin">Admin</label>
+                        <label htmlFor="admin">Admin</label>
                     </span>
                     <span>
                         <input type="radio" id="user" name="role" value="guest" style={{accentColor:"#0000FF"}} checked={role==="guest"} onChange={()=>setRole("guest")}/>
-                        <label for="user">User</label>
+                        <label htmlFor="user">User</label>
                     </span>
                 </div>
 

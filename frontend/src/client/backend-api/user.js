@@ -1,5 +1,5 @@
-const serverUrl = "https://bookhive-fe.onrender.com"
-// const serverUrl = "http://localhost:8080"
+// const serverUrl = "https://bookhive-fe.onrender.com"
+const serverUrl = "http://localhost:8080"
 
 const UserApi = {
   borrowBook: async (isbn, userId) => {
@@ -41,7 +41,6 @@ const UserApi = {
   },
   getBorrowBook: async () => {
     const res = await fetch(`${serverUrl}/v1/user/borrowed-books`, { method: "GET", credentials:'include'})
-    console.log("res",res);
     return res.json()
   },
   register: async (username, password, role) => {
@@ -60,7 +59,6 @@ const UserApi = {
       headers: { "Content-Type": "application/json" },
       credentials:'include'
     })
-    console.log(res)
     return res.json()
   },
   getProfile: async () => {

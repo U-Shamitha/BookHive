@@ -1,6 +1,11 @@
 #root{
     height: 100%;
-    min-height: 97vh !important;
+    /* min-height: 97vh !important; */
     margin: 0px;
     padding: 0px;
+}
+
+body{
+    margin: 0px ;
+    margin-top: 20px;
 }

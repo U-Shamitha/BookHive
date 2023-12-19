@@ -1,5 +1,5 @@
-const serverUrl = "https://bookhive-fe.onrender.com"
-// const serverUrl = "http://localhost:8080"
+// const serverUrl = "https://bookhive-fe.onrender.com"
+const serverUrl = "http://localhost:8080"
 
 const BookApi = {
   getAllBooks: async () => {

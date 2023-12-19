@@ -21,7 +21,7 @@ import { BackendApi } from "../../client/backend-api"
 import { useUser } from "../../context/user-context"
 import classes from "./styles.module.css"
 
-import io from 'socket.io-client';
+import { socket } from "../../App"
 
 export const BooksList = () => {
 
@@ -33,9 +33,6 @@ export const BooksList = () => {
     const [openModal, setOpenModal] = useState(false)
     const { isAdmin, user } = useUser()
     const [activeTab, setActiveTab] = useState('book-list')
-
-    const serverUrl = "https://bookhive-fe.onrender.com"
-    const socket = io(serverUrl);
 
     const sendRefreshRequest = () => {
         // Emit the borrow request to the server
@@ -59,6 +56,7 @@ export const BooksList = () => {
                 fetchBooks().catch(console.error)
                 setOpenModal(false)
                 setActiveBookIsbn("")
+                sendRefreshRequest()
             })
         }
     }
@@ -78,7 +76,7 @@ export const BooksList = () => {
     }
 
     useEffect(() => {
-        // Listen for new borrow requests
+        // Listen for changes
         socket.on('newBorrowRequest', (data) => {
             fetchBooks().catch(console.error)
             fetchUserBook().catch(console.error)
@@ -117,8 +115,8 @@ export const BooksList = () => {
                 <>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', columnGap: '20px' }}>
                         {books.map((book) =>
-                            <>
-                                <Container width="100px" height="100px" component={Paper} style={{ margin: '10px', paddingBottom: '15px', minWidth: '250px', flexShrink: '0' }}>
+                            <div key={book._id}>
+                                <Container width="100px" height="100px" component={Paper} style={{ margin: '10px', paddingTop:'5px', paddingBottom: '15px', minWidth: '250px', flexShrink: '0' }}>
                                     <div>
                                         <p style={{ fontSize: '20px', fontWeight: 'bold' }}>{book.name}</p>
                                         <p>ISBN: {book.isbn}</p>
@@ -161,7 +159,7 @@ export const BooksList = () => {
                                         </div>
                                     </div>
                                 </Container>
-                            </>
+                            </div>
                         )}
                         <Modal open={openModal} onClose={(e) => setOpenModal(false)}>
                             <Card className={classes.conf_modal}>
@@ -193,7 +191,7 @@ export const BooksList = () => {
                         {
                             books.map((book) => 
                                 (book.borrowedBy2.some(borrowDetails => borrowDetails.status == 'requested'))?
-                                <Container width="100px" height="100px" component={Paper} style={{ margin: '10px', padding: '20px', minWidth: '250px', flexShrink: '0' }}>
+                                <Container height="100px" component={Paper} style={{ margin: '10px', padding: '20px', minWidth: '250px', flexShrink: '0', maxWidth: '600px' }}>
                                     <h1>{`${book.name}  ${book.availableQuantity}`}</h1>
                                     <TableRow>
                                         <TableCell>User Name</TableCell>
@@ -227,8 +225,8 @@ export const BooksList = () => {
                         {
                             books.map((book) => 
                                 (book.borrowedBy2.some(borrowDetails => borrowDetails.borrower == user._id && borrowDetails.status=='requested')) ?
-                                <Container width="100px" height="100px" component={Paper} style={{ margin: '10px', padding: '20px', minWidth: '250px', flexShrink: '0' }}>
-                                    <h1>{`${book.name}  ${book.availableQuantity}`}</h1>
+                                <Container height="100px" component={Paper} style={{ margin: '10px', padding: '20px', minWidth: '250px', flexShrink: '0', maxWidth:'600px' }}>
+                                    <h1 style={{width:'fit-content !important'}}>{`${book.name}  ${book.availableQuantity}`}</h1>
                                     <TableRow>
                                         <TableCell>User Name</TableCell>
                                         <TableCell>Requested On</TableCell>
@@ -261,7 +259,7 @@ export const BooksList = () => {
                         {
                             books.map((book) => 
                                 (book.borrowedBy2.some(borrowDetails => borrowDetails.returnReq.status=="requested"))?
-                                <Container width="100px" height="100px" component={Paper} style={{ margin: '10px', padding: '20px', minWidth: '250px', flexShrink: '0' }}>
+                                <Container height="100px" component={Paper} style={{ margin: '10px', padding: '20px', minWidth: '250px', flexShrink: '0', maxWidth:'600px'}}>
                                     <h1>{`${book.name}  ${book.availableQuantity}`}</h1>
                                     <TableRow>
                                         <TableCell>User Name</TableCell>
@@ -326,8 +324,7 @@ export const BooksList = () => {
 
 
             {/* List of borrowed books shown to customer */}
-            {console.log(borrowedBook)}
-            {
+            {/* {
                 user && !isAdmin && activeTab == "borrowed-books" && (
                     <>
                         {borrowedBook.length > 0 ? (
@@ -355,6 +352,44 @@ export const BooksList = () => {
                                                 </div>
                                             </Container>
                                         </>
+                                    )}
+                                </div>
+
+
+                            </>
+                        ) : (
+                            <Typography variant="h5">No books issued!</Typography>
+                        )}
+                    </>
+                )
+            } */}
+
+            {
+                user && !isAdmin && activeTab == "borrowed-books" && (
+                    <>
+                        {books.length > 0 ? (
+                            <>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', columnGap: '20px' }}>
+                                    {books.map((book) => book.borrowedBy.some(borrower => borrower==user._id) ?
+                                            <Container component={Paper} style={{ margin: '10px', paddingBottom: '15px', width: '250px', flexShrink: '0' }}>
+                                                <div>
+                                                    <p style={{ fontSize: '20px', fontWeight: 'bold' }}>{book.name}</p>
+                                                    <p>ISBN: {book.isbn}</p>
+                                                    <p>Quantity: {book.quantity}</p>
+                                                    <p>Available: {book.availableQuantity}</p>
+                                                    <p>Price: ${book.price}</p>
+                                                    <div className={classes.actionsContainer}>
+                                                        <Button
+                                                            variant="contained"
+                                                            component={RouterLink}
+                                                            size="small"
+                                                            to={`/books/${book.isbn}`}
+                                                        >
+                                                            View
+                                                        </Button>
+                                                    </div>
+                                                </div>
+                                            </Container>:null
                                     )}
                                 </div>
 
