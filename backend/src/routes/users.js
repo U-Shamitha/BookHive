@@ -19,6 +19,7 @@ router.get("/", async (req, res, next) => {
 })
 
 router.post("/borrow", async (req, res, next) => {
+  console.log(req.body)
   try {
     const book = await BookModel.findOne({ isbn: req.body.isbn })
     if (book == null) {
@@ -34,7 +35,7 @@ router.post("/borrow", async (req, res, next) => {
     if (book.borrowedBy.includes(user.id)) {
       return res.status(400).json({ error: "You've already borrowed this book" })
     }
-    const newBorrowDetail = await BorrowDetailsModel.create({borrower: user.id, borrowedOn: new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' } ), borrowerName: user.username ,returnedOn: ""})
+    const newBorrowDetail = await BorrowDetailsModel.create({borrower: user.id, borrowedOn: new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' } ), borrowerName: user.username ,returnedOn: "", dueDate: req.body.dueDate})
     await book.update({borrowedBy2: [...book.borrowedBy2, newBorrowDetail ]})
     const updatedBook = await BookModel.findById(book.id)
     return res.status(200).json({
@@ -86,6 +87,138 @@ router.post("/accept-borrow", async (req, res, next) => {
      }
     )
     await book.update({ borrowedBy: [...book.borrowedBy, user.id] })
+    const updatedBook = await BookModel.findById(book.id)
+    return res.status(200).json({
+      book: {
+        ...updatedBook.toJSON(),
+        availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
+      },
+    })
+  } catch (err) {
+    console.log(err)
+    next(err)
+  }
+})
+
+router.post("/reject-borrow-req", async (req, res, next) => {
+  try {
+    console.log(req.body)
+    const book = await BookModel.findOne({ isbn: req.body.isbn })
+    if (book == null) {
+      return res.status(404).json({ error: "Book not found" })
+    }
+    if (book.borrowedBy.length === book.quantity) {
+      return res.status(400).json({ error: "Book is not available" })
+    }
+    const user = await UserModel.findById(req.body.userId)
+    console.log("accepted user", user);
+    if (user == null) {
+      return res.status(404).json({ error: "User not found" })
+    }
+    if (book.borrowedBy.includes(user.id)) {
+      return res.status(400).json({ error: "This user already borrowed this book" })
+    }
+    await BookModel.findOneAndUpdate(
+      {
+        isbn: req.body.isbn,
+        borrowedBy2:{
+        $elemMatch: {
+          _id: mongoose.Types.ObjectId(req.body.borrowReqId)
+        }
+       }
+      },
+      {
+        $set: {
+          'borrowedBy2.$.status': "rejected",
+          'borrowedBy2.$.bReqRejectedOn' : new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' } )
+        }
+     }
+    )
+    const updatedBook = await BookModel.findById(book.id)
+    return res.status(200).json({
+      book: {
+        ...updatedBook.toJSON(),
+        availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
+      },
+    })
+  } catch (err) {
+    console.log(err)
+    next(err)
+  }
+})
+
+router.post("/edit-borrow-req", async (req, res, next) => {
+  try {
+    console.log(req.body)
+    const book = await BookModel.findOne({ isbn: req.body.isbn })
+    if (book == null) {
+      return res.status(404).json({ error: "Book not found" })
+    }
+    const user = await UserModel.findById(req.body.userId)
+    console.log("accepted user", user);
+    if (user == null) {
+      return res.status(404).json({ error: "User not found" })
+    }
+
+    await BookModel.findOneAndUpdate(
+      {
+        isbn: req.body.isbn,
+        borrowedBy2:{
+        $elemMatch: {
+          _id: mongoose.Types.ObjectId(req.body.borrowReqId)
+        }
+       }
+      },
+      {
+        $set: {
+          'borrowedBy2.$.dueDate': req.body.dueDate,
+          'borrowedBy2.$.borrowedOn' : new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' } )
+        }
+     }
+    )
+    const updatedBook = await BookModel.findById(book.id)
+    return res.status(200).json({
+      book: {
+        ...updatedBook.toJSON(),
+        availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
+      },
+    })
+  } catch (err) {
+    console.log(err)
+    next(err)
+  }
+})
+
+router.post("/delete-borrow-req", async (req, res, next) => {
+  try {
+    console.log(req.body)
+    const book = await BookModel.findOne({ isbn: req.body.isbn })
+    if (book == null) {
+      return res.status(404).json({ error: "Book not found" })
+    }
+    const user = await UserModel.findById(req.body.userId)
+    console.log("accepted user", user);
+    if (user == null) {
+      return res.status(404).json({ error: "User not found" })
+    }
+
+    await BookModel.findOneAndUpdate(
+      {
+        isbn: req.body.isbn,
+        borrowedBy2:{
+        $elemMatch: {
+          _id: mongoose.Types.ObjectId(req.body.borrowReqId)
+        }
+       }
+      },
+      {
+        $pull: {
+          borrowedBy2: {
+            _id: mongoose.Types.ObjectId(req.body.borrowReqId)
+          }
+        }
+     }
+    )
     const updatedBook = await BookModel.findById(book.id)
     return res.status(200).json({
       book: {
@@ -181,6 +314,91 @@ router.post("/accept-return", async (req, res, next) => {
           'borrowedBy2.$.returnReq.status': 'accepted'
         }
      }
+    )
+
+    const updatedBook = await BookModel.findById(book.id)
+    return res.status(200).json({
+      book: {
+        ...updatedBook.toJSON(),
+        availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
+      },
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post("/reject-return-req", async (req, res, next) => {
+  try {
+    const book = await BookModel.findOne({ isbn: req.body.isbn })
+    if (book == null) {
+      return res.status(404).json({ error: "Book not found" })
+    }
+    const user = await UserModel.findById(req.body.userId)
+    if (user == null) {
+      return res.status(404).json({ error: "User not found" })
+    }
+
+    await BookModel.findOneAndUpdate(
+      {
+        isbn: req.body.isbn,
+        borrowedBy2: {
+          $elemMatch: {
+            borrower: user.id,
+            returnedOn: ""
+          }
+        }
+      },
+      {
+        $set: {
+          'borrowedBy2.$.returnReq.rejectedOn': new Date().toLocaleString('en-US', { timeZone: 'Asia/Kolkata' } ),
+          'borrowedBy2.$.returnReq.status': 'rejected'
+        }
+     }
+    )
+
+    const updatedBook = await BookModel.findById(book.id)
+    return res.status(200).json({
+      book: {
+        ...updatedBook.toJSON(),
+        availableQuantity: updatedBook.quantity - updatedBook.borrowedBy.length,
+      },
+    })
+  } catch (err) {
+    next(err)
+  }
+})
+
+router.post("/delete-return-req", async (req, res, next) => {
+  try {
+    const book = await BookModel.findOne({ isbn: req.body.isbn })
+    if (book == null) {
+      return res.status(404).json({ error: "Book not found" })
+    }
+    const user = await UserModel.findById(req.body.userId)
+    if (user == null) {
+      return res.status(404).json({ error: "User not found" })
+    }
+
+    console.log("user.id", user.id)
+    console.log("book.borrowedBy", book.borrowedBy)
+
+    await BookModel.findOneAndUpdate(
+      {
+        isbn: req.body.isbn,
+        borrowedBy2: {
+          $elemMatch: {
+            borrower: user.id,
+            returnedOn: "",
+            returnReq: { $exists: true }
+          }
+        }
+      },
+      {
+        $unset: {
+          "borrowedBy2.$.returnReq": 1
+        }
+      }
     )
 
     const updatedBook = await BookModel.findById(book.id)

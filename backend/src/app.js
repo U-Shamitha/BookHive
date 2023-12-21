@@ -7,6 +7,7 @@ const proxy = require('express-http-proxy')
 
 const morgan = require("morgan")
 const cookieParser = require("cookie-parser")
+const bodyParser = require('body-parser');
 const sessions = require("express-session")
 const MongoDBStore = require('connect-mongodb-session')(sessions);
 const { apiV1 } = require("./routes")
@@ -14,15 +15,42 @@ const { connectDb } = require("./db")
 const { UserModel } = require("./models/user")
 
 const http = require('http');
+const https = require('https');
+const fs = require('fs');
+
+const options = {
+  key: fs.readFileSync('../config/cert.key'),
+  cert: fs.readFileSync('../config/cert.crt')
+};
+
 const socketIO = require('socket.io');
 const app = express()
+
+//HTTP server
 const server = http.createServer(app);
-const io = socketIO(server, {
+// const io = socketIO(server, {
+//   cors: {
+//     origin: '*',
+//     methods: ["GET", "POST"],
+//   }
+// });
+
+// HTTPS server
+const httpsServer = https.createServer(options, app, (req, res) => {
+  // res.writeHead(200, {'Content-Type': 'text/plain'});
+  // res.end('HTTPS server running on port 8080\n');
+});
+const io = socketIO(httpsServer, {
   cors: {
     origin: '*',
     methods: ["GET", "POST"],
   }
 });
+
+
+// Increase the payload size limit (adjust the value as needed)
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use(morgan("dev"))
 app.use(express.json())
@@ -61,7 +89,7 @@ io.on('connection', (socket) => {
 const sessionStore = new MongoDBStore({
   // MongoDB connection options
   uri: process.env.DB_URI,
-  collection: 'sessions', // Optional, the collection name for sessions
+  collection: 'sessions', 
   expires: 1000 * 60 * 60 * 24 * 1, // Optional, session expiration in milliseconds (1 days in this example)
   connectionOptions: {
     useNewUrlParser: true,
@@ -82,8 +110,8 @@ app.use(
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
     // cookie: { maxAge: 1000 * 60 * 60 * 24 },
-    // cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'None', secure:true},
-    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'none', secure:false, httpOnly:false},
+    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'None', secure:true},
+    // cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'none', secure:false, httpOnly:false},
     resave: false,
   })
 )
@@ -111,7 +139,8 @@ connectDb()
     }
   })
   .then(() => {
-    server.listen(8080, () => console.log("Server is listening on http://localhost:8080"))
+    httpsServer.listen(8080, () => console.log("Server is listening on https://localhost:8080"))
+    server.listen(8000, () => console.log("Server is listening on http://localhost:8000"))
   })
   .catch((err) => {
     console.error("Failed to connect to database", err)

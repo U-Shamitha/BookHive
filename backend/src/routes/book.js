@@ -1,5 +1,32 @@
 const router = require("express")()
+const multer = require("multer");
+const fs = require("fs");
 const { BookModel } = require("../models/book")
+
+//Image upload
+const dStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadPath = 'uploads/';
+    fs.mkdirSync(uploadPath, { recursive: true }); // Create 'uploads' directory
+    cb(null, uploadPath); // Set the destination folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname); // Set the filename
+  },
+});
+const upload = multer({
+  storage: dStorage,
+  fileFilter: function (req, file, callback) {
+    if (file.mimetype.startsWith('image/')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Invalid file type. Only images are allowed.'));
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5 MB limit, adjust as needed
+  },
+})
 
 router.get("/", async (req, res, next) => {
   try {
@@ -32,13 +59,25 @@ router.get("/:bookIsbn", async (req, res, next) => {
   }
 })
 
-router.post("/", async (req, res, next) => {
+router.post("/", upload.fields([{ name: 'bookImg', maxCount: 1 }]), async (req, res, next) => {
+  console.log(req.body);
+  console.log(req.files['bookImg'][0]);
+  console.log(req.files[0])
   try {
     const book = await BookModel.findOne({ isbn: req.body.isbn })
     if (book != null) {
       return res.status(400).json({ error: "Book with same ISBN already found" })
     }
-    const newBook = await BookModel.create(req.body)
+    const newBook = new BookModel(req.body);
+    // If an image is provided, add it to the new book object
+    if (req.files['bookImg'][0]) {
+      newBook.image = {
+        data: fs.readFileSync(req.files['bookImg'][0].path).toString('base64'),
+        name: req.files['bookImg'][0].originalname,
+        contentType: req.files['bookImg'].mimetype,
+      };
+    }
+    await newBook.save();
     return res.status(200).json({ book: newBook })
   } catch (err) {
     next(err)
