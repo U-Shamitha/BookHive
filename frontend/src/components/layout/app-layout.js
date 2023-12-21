@@ -23,6 +23,7 @@ import { Book } from "../book/book"
 import { WithLoginProtector } from "../access-control/login-protector"
 import { WithAdminProtector } from "../access-control/admin-protector"
 import { RegisterDialog } from "../register/register-dialog"
+import { BookOutlined, BookRounded, BookSharp } from "@mui/icons-material"
 
 
 export const AppLayout = () => {
@@ -74,11 +75,11 @@ export const AppLayout = () => {
     }, [user, isAdmin])
 
     return (
-        <div style={{marginTop:'80px'}}>
+        <div style={{marginTop:'60px'}}>
             <AppBar>
                 <Container maxWidth="xl">
                     <Toolbar disableGutters issticky='true'>
-                        <AdbIcon sx={{ display: "flex", mr: 1 }} />
+                        <BookOutlined sx={{ display: "flex", mr: 1 }} />
                         <Link to="/" style={{ textDecoration: "none", flexGrow: 1 }}>
                             <Typography
                                 variant="h6"

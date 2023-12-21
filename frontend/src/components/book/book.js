@@ -26,6 +26,7 @@ import { makeChartOptions } from "./chart-options"
 import classes from "./styles.module.css"
 
 import { socket } from "../../App"
+import { BorrowBookForm } from "./borrowBook-form/BorrowBook-form"
 
 export const Book = () => {
     const { bookIsbn } = useParams()
@@ -34,6 +35,16 @@ export const Book = () => {
     const [book, setBook] = useState(null)
     const [chartOptions, setChartOptions] = useState(null)
     const [openTab, setOpenTab] = useState(0)
+    const [openBorrowBookFormDialog, setOpenBorrowBookFormDialog] = useState(false)
+
+    const handleBorrowBookFormSubmit = (dueDate) => {
+        borrowBook(dueDate)
+        setOpenBorrowBookFormDialog(false)
+    }
+
+    const handleBorrowBookFormClose = () => {
+        setOpenBorrowBookFormDialog(false)
+    }
 
     const sendRefreshRequest = () => {
         // Emit the borrow request to the server
@@ -41,10 +52,10 @@ export const Book = () => {
         socket.emit('borrowRequest', user._id);
       };
 
-    const borrowBook = () => {
+    const borrowBook = (dueDate) => {
         if (book && user) {
             BackendApi.user
-                .borrowBook(book.isbn, user._id)
+                .borrowBook(book.isbn, user._id, dueDate)
                 .then(({ book, error }) => {
                     if (error) {
                         NotificationManager.error(error)
@@ -203,6 +214,7 @@ export const Book = () => {
                                     <TableCell>Borrower</TableCell>
                                     <TableCell>Borrowed On</TableCell>
                                     <TableCell>Returned On</TableCell>
+                                    <TableCell>Due Date</TableCell>
                                 </TableHead>
                                 <TableBody>
                                     {book.borrowedBy2.slice().reverse().map((borrowDetail) =>
@@ -211,6 +223,7 @@ export const Book = () => {
                                             <TableCell>{borrowDetail['borrowerName']}</TableCell>
                                             <TableCell>{borrowDetail['borrowedOn']}</TableCell>
                                             <TableCell>{borrowDetail['returnedOn']}</TableCell>
+                                            <TableCell>{borrowDetail['dueDate']}</TableCell>
                                         </TableRow>
                                     :
                                     null
@@ -256,8 +269,8 @@ export const Book = () => {
                                 <>
                                     <Button
                                         variant="contained"
-                                        onClick={borrowBook}
-                                        disabled={book && user && (book.borrowedBy.includes(user._id) || book.borrowedBy2.some(borrowDetails => borrowDetails.borrower === user._id && (borrowDetails.status == 'requested' || borrowDetails.returnedOn == '')))}
+                                        onClick={()=>setOpenBorrowBookFormDialog(true)}
+                                        disabled={book && user && (book.borrowedBy.includes(user._id) || book.borrowedBy2.some(borrowDetails => borrowDetails.borrower === user._id && (borrowDetails.status == 'accepted' && borrowDetails.returnedOn == ''|| borrowDetails.status=='requested')))}
                                     >
                                         Request Borrow
                                     </Button>
@@ -276,6 +289,11 @@ export const Book = () => {
                         </div>
                     </CardActions>
                 </Card>
+                <BorrowBookForm
+                    open={openBorrowBookFormDialog}
+                    handleSubmit={handleBorrowBookFormSubmit}
+                    handleClose={handleBorrowBookFormClose}
+                />
             </div>
         )
     )

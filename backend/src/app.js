@@ -3,6 +3,7 @@ const cors = require('cors')
 dotenv.config()
 
 const express = require("express")
+const proxy = require('express-http-proxy')
 
 const morgan = require("morgan")
 const cookieParser = require("cookie-parser")
@@ -29,13 +30,18 @@ app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 // Update the cors options to allow your React app's origin
 const corsOptions = {
-  origin: 'https://bookhive-oab8.onrender.com',
+  origin: 'http://localhost:3000',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
 };
-// app.use(cors({origin: 'https://bookhive-oab8.onrender.com',
-// credentials: true,}))
+// const corsOptions = {
+//   origin: 'https://bookhive-oab8.onrender.com',
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   credentials: true,
+//   optionsSuccessStatus: 204,
+// };
+
 app.use(cors(corsOptions));
 
 io.on('connection', (socket) => {
@@ -56,7 +62,7 @@ const sessionStore = new MongoDBStore({
   // MongoDB connection options
   uri: process.env.DB_URI,
   collection: 'sessions', // Optional, the collection name for sessions
-  expires: 1000 * 60 * 60 * 24 * 7, // Optional, session expiration in milliseconds (7 days in this example)
+  expires: 1000 * 60 * 60 * 24 * 1, // Optional, session expiration in milliseconds (1 days in this example)
   connectionOptions: {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -76,7 +82,8 @@ app.use(
     secret: process.env.SESSION_SECRET,
     saveUninitialized: false,
     // cookie: { maxAge: 1000 * 60 * 60 * 24 },
-    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'None', secure:true},
+    // cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'None', secure:true},
+    cookie: {maxAge: 1000 * 60 * 60 * 48, sameSite: 'none', secure:false, httpOnly:false},
     resave: false,
   })
 )

@@ -1,11 +1,12 @@
 // const serverUrl = "https://bookhive-fe.onrender.com"
-const serverUrl = "http://localhost:8080"
+// const serverUrl = "http://localhost:8000"
+const serverUrl = "https://localhost:8080"
 
 const UserApi = {
-  borrowBook: async (isbn, userId) => {
+  borrowBook: async (isbn, userId, dueDate) => {
     const res = await fetch(`${serverUrl}/v1/user/borrow`, {
       method: "POST",
-      body: JSON.stringify({ isbn, userId }),
+      body: JSON.stringify({ isbn, userId, dueDate }),
       headers: { "Content-Type": "application/json" },
       credentials:'include'
     })
@@ -14,6 +15,34 @@ const UserApi = {
   },
   acceptBorrow: async (isbn, userId, borrowReqId) => {
     const res = await fetch(`${serverUrl}/v1/user/accept-borrow`, {
+      method: "POST",
+      body: JSON.stringify({ isbn, userId, borrowReqId}),
+      headers: { "Content-Type": "application/json" },
+      credentials:'include'
+    })
+    return res.json()
+  },
+  editBorrowReq: async (isbn, userId, borrowReqId, dueDate) => {
+    const res = await fetch(`${serverUrl}/v1/user/edit-borrow-req`, {
+      method: "POST",
+      body: JSON.stringify({ isbn, userId, borrowReqId, dueDate}),
+      headers: { "Content-Type": "application/json" },
+      credentials:'include'
+    })
+    return res.json()
+  },
+  rejectBorrowReq: async (isbn, userId, borrowReqId) => {
+    const res = await fetch(`${serverUrl}/v1/user/reject-borrow-req`, {
+      method: "POST",
+      body: JSON.stringify({ isbn, userId, borrowReqId}),
+      headers: { "Content-Type": "application/json" },
+      credentials:'include'
+    })
+    return res.json()
+  },
+  deleteBorrowReq: async (isbn, userId, borrowReqId) => {
+    console.log({ isbn, userId, borrowReqId})
+    const res = await fetch(`${serverUrl}/v1/user/delete-borrow-req`, {
       method: "POST",
       body: JSON.stringify({ isbn, userId, borrowReqId}),
       headers: { "Content-Type": "application/json" },
@@ -34,6 +63,25 @@ const UserApi = {
     const res = await fetch(`${serverUrl}/v1/user/accept-return`, {
       method: "POST",
       body: JSON.stringify({ isbn, userId }),
+      headers: { "Content-Type": "application/json" },
+      credentials:'include'
+    })
+    return res.json()
+  },
+  rejectReturnReq: async (isbn, userId) => {
+    const res = await fetch(`${serverUrl}/v1/user/reject-return-req`, {
+      method: "POST",
+      body: JSON.stringify({ isbn, userId }),
+      headers: { "Content-Type": "application/json" },
+      credentials:'include'
+    })
+    return res.json()
+  },
+  deleteBorrowReq: async (isbn, userId, returnReqId) => {
+    console.log({ isbn, userId, returnReqId})
+    const res = await fetch(`${serverUrl}/v1/user/delete-borrow-req`, {
+      method: "POST",
+      body: JSON.stringify({ isbn, userId, returnReqId}),
       headers: { "Content-Type": "application/json" },
       credentials:'include'
     })

@@ -13,6 +13,8 @@ import {
     Select,
     MenuItem,
     Typography,
+    Input,
+    OutlinedInput
 } from "@mui/material"
 import { BackendApi } from "../../client/backend-api"
 import classes from "./styles.module.css"
@@ -30,6 +32,7 @@ export const BookForm = () => {
     const [book, setBook] = useState({
         name: "",
         isbn: bookIsbn || "",
+        bookImg:"",
         category: "",
         price: 0,
         quantity: 0,
@@ -82,6 +85,7 @@ export const BookForm = () => {
                     })
                     .then(() => navigate(-1))
             } else {
+                console.log(book)
                 BackendApi.book
                     .addBook({
                         ...book,
@@ -106,6 +110,7 @@ export const BookForm = () => {
     const updateBookField = (event) => {
         const field = event.target
         setBook((book) => ({ ...book, [field.name]: field.value }))
+        console.log(book)
     }
 
     const validateForm = (event) => {
@@ -164,7 +169,7 @@ export const BookForm = () => {
                 <Typography className={classes.pageHeader} variant="h5">
                     {bookIsbn ? "Update Book" : "Add Book"}
                 </Typography>
-                <form noValidate autoComplete="off" onSubmit={formSubmit}>
+                <form noValidate autoComplete="off" encType="multipart/form-data" onSubmit={formSubmit}>
                     <FormGroup>
                         <FormControl className={classes.mb2}>
                             <TextField
@@ -190,9 +195,24 @@ export const BookForm = () => {
                                 helperText={errors.isbn}
                             />
                         </FormControl>
+                        <Typography pb={1}>Select Image</Typography>
                         <FormControl className={classes.mb2}>
-                            <InputLabel>Category</InputLabel>
-                            <Select name="category" value={book.category} onChange={updateBookField} required>
+                            <Input
+                                type="file"
+                                name="bookImg"
+                                accept="image/*"
+                                disableUnderline="true"
+                                onChange={(e) =>  {console.log(e.target.files); setBook((book) => ({ ...book, 'bookImg': e.target.files[0] }))}}
+                            />
+                        </FormControl>
+                        <FormControl className={classes.mb2}>
+                            <InputLabel id="category">Category</InputLabel>
+                            <Select labelId="category" name="category" value={book.category} onChange={updateBookField} input={
+                                <OutlinedInput
+                                    label="Category"
+                                />
+                                }
+                            required>
                                 <MenuItem value="Sci-Fi">Sci-Fi</MenuItem>
                                 <MenuItem value="Action">Action</MenuItem>
                                 <MenuItem value="Adventure">Adventure</MenuItem>
