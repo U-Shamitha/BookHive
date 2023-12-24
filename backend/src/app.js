@@ -28,24 +28,24 @@ const app = express()
 
 //HTTP server
 const server = http.createServer(app);
-// const io = socketIO(server, {
-//   cors: {
-//     origin: '*',
-//     methods: ["GET", "POST"],
-//   }
-// });
-
-// HTTPS server
-const httpsServer = https.createServer(options, app, (req, res) => {
-  // res.writeHead(200, {'Content-Type': 'text/plain'});
-  // res.end('HTTPS server running on port 8080\n');
-});
-const io = socketIO(httpsServer, {
+const io = socketIO(server, {
   cors: {
     origin: '*',
     methods: ["GET", "POST"],
   }
 });
+
+// HTTPS server
+// const httpsServer = https.createServer(options, app, (req, res) => {
+//   // res.writeHead(200, {'Content-Type': 'text/plain'});
+//   // res.end('HTTPS server running on port 8080\n');
+// });
+// const io = socketIO(httpsServer, {
+//   cors: {
+//     origin: '*',
+//     methods: ["GET", "POST"],
+//   }
+// });
 
 
 // Increase the payload size limit (adjust the value as needed)
@@ -139,8 +139,8 @@ connectDb()
     }
   })
   .then(() => {
-    httpsServer.listen(8080, () => console.log("Server is listening on https://localhost:8080"))
-    // server.listen(8000, () => console.log("Server is listening on http://localhost:8000"))
+    // httpsServer.listen(8080, () => console.log("Server is listening on https://localhost:8080"))
+    server.listen(8000, () => console.log("Server is listening on http://localhost:8000"))
   })
   .catch((err) => {
     console.error("Failed to connect to database", err)
