@@ -443,9 +443,9 @@ router.get("/profile", async (req, res, next) => {
 
 router.post("/register", async (req, res, next) => {
   try {
-    var user = await UserModel.findOne({ username: req.body.username })
+    var user = await UserModel.findOne({ email: req.body.email })
     if (user == null) {
-      user = await UserModel.create({ username: req.body.username, password: req.body.password, role: req.body.role })
+      user = await UserModel.create({ email: req.body.email, username: req.body.username, password: req.body.password, role: req.body.role })
       if(user == null){
         return res.status(400).json({ error: "Error in creating user" })
       }
@@ -462,7 +462,7 @@ router.post("/register", async (req, res, next) => {
 
 router.post("/login", async (req, res, next) => {
   try {
-    const user = await UserModel.findOne({ username: req.body.username })
+    const user = await UserModel.findOne({ email: req.body.email })
     if (user == null) {
       return res.status(404).json({ error: "User not found" })
     }

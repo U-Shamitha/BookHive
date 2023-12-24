@@ -68,6 +68,15 @@ router.post("/", upload.fields([{ name: 'bookImg', maxCount: 1 }]), async (req, 
     if (book != null) {
       return res.status(400).json({ error: "Book with same ISBN already found" })
     }
+
+    if (req.body.priceHistory) {
+      req.body.priceHistory = req.body.priceHistory.map(JSON.parse);
+    }
+  
+    if (req.body.quantityHistory) {
+      req.body.quantityHistory = req.body.quantityHistory.map(JSON.parse);
+    }
+  
     const newBook = new BookModel(req.body);
     // If an image is provided, add it to the new book object
     if (req.files['bookImg'][0]) {

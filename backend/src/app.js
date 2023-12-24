@@ -57,18 +57,18 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: false }))
 // Update the cors options to allow your React app's origin
-const corsOptions = {
-  origin: 'http://localhost:3000',
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-  credentials: true,
-  optionsSuccessStatus: 204,
-};
 // const corsOptions = {
-//   origin: 'https://bookhive-oab8.onrender.com',
+//   origin: 'http://localhost:3000',
 //   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 //   credentials: true,
 //   optionsSuccessStatus: 204,
 // };
+const corsOptions = {
+  origin: 'https://bookhive-oab8.onrender.com',
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  optionsSuccessStatus: 204,
+};
 
 app.use(cors(corsOptions));
 
@@ -140,7 +140,7 @@ connectDb()
   })
   .then(() => {
     httpsServer.listen(8080, () => console.log("Server is listening on https://localhost:8080"))
-    server.listen(8000, () => console.log("Server is listening on http://localhost:8000"))
+    // server.listen(8000, () => console.log("Server is listening on http://localhost:8000"))
   })
   .catch((err) => {
     console.error("Failed to connect to database", err)
