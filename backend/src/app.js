@@ -18,10 +18,10 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 
-const options = {
-  key: fs.readFileSync('../config/cert.key'),
-  cert: fs.readFileSync('../config/cert.crt')
-};
+// const options = {
+//   key: fs.readFileSync('../config/cert.key'),
+//   cert: fs.readFileSync('../config/cert.crt')
+// };
 
 const socketIO = require('socket.io');
 const app = express()
