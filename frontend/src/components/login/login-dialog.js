@@ -8,18 +8,29 @@ import {
     DialogTitle,
     Slide,
 } from "@mui/material"
+import { NotificationManager } from "react-notifications"
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />
 })
 
 export const LoginDialog = ({ open, handleClose, handleSubmit }) => {
-    const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(email);
+        return isValid
+    }
 
     const onSubmit = (event) => {
         event.preventDefault()
-        handleSubmit(username, password)
+        if(validateEmail(email)){
+            handleSubmit(email, password)
+        }else{
+            NotificationManager.error("Enter valid Email");
+        }
     }
 
     const handleEnterKeyDown = (event) => {
@@ -41,13 +52,13 @@ export const LoginDialog = ({ open, handleClose, handleSubmit }) => {
                 <TextField
                     autoFocus
                     margin="dense"
-                    id="username"
-                    label="Username"
-                    type="text"
+                    id="email"
+                    label="Email"
+                    type="email"
                     fullWidth
                     variant="standard"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
                 <TextField
                     margin="dense"

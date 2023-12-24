@@ -1,6 +1,5 @@
-// const serverUrl = "https://bookhive-fe.onrender.com"
-// const serverUrl = "http://localhost:8000"
-const serverUrl = "https://localhost:8080"
+const serverUrl = "https://bookhive-fe.onrender.com"
+// const serverUrl = "https://localhost:8080"
 
 const UserApi = {
   borrowBook: async (isbn, userId, dueDate) => {
@@ -91,19 +90,19 @@ const UserApi = {
     const res = await fetch(`${serverUrl}/v1/user/borrowed-books`, { method: "GET", credentials:'include'})
     return res.json()
   },
-  register: async (username, password, role) => {
+  register: async (email, username, password, role) => {
     const res = await fetch(`${serverUrl}/v1/user/register`, {
       method: "POST",
-      body: JSON.stringify({ username, password, role}),
+      body: JSON.stringify({ email, username, password, role}),
       headers: { "Content-Type": "application/json" },
       credentials:'include'
     })
     return res.json()
   },
-  login: async (username, password) => {
+  login: async (email, password) => {
     const res = await fetch(`${serverUrl}/v1/user/login`, {
       method: "POST",
-      body: JSON.stringify({ username, password }),
+      body: JSON.stringify({ email, password }),
       headers: { "Content-Type": "application/json" },
       credentials:'include'
     })

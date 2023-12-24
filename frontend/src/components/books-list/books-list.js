@@ -139,6 +139,21 @@ const handleBreqClose = () => {
     })
   }
 
+  const differenceInDays= (borrowedDate, dueDate) =>{
+
+    const startDateTime = new Date(borrowedDate);
+    const endDateTime = new Date(dueDate);
+
+    // Calculate the time difference in milliseconds
+    const timeDifference = endDateTime - startDateTime;
+
+    // Convert milliseconds to days
+    const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+
+    return daysDifference+1
+  }
+
+
   useEffect(() => {
     // Listen for changes
     socket.on("newBorrowRequest", (data) => {
@@ -422,11 +437,12 @@ const handleBreqClose = () => {
                     return null
                   })}
                   {count.bReq == 0 && (
-                    <Typography variant="h5" style={{margin:'10px'}}>No Borrow Requests Found!</Typography>
+                    <Typography variant="h5" style={{padding:'20px'}}>No Borrow Requests Found!</Typography>
                   )}
                 </> :
                 <>
-                  {books.some((book)=> book.borrowedBy2.some((borrowDetails)=> borrowDetails.status!="")) &&
+                  {/* Admin Borrow Req History */}
+                  {books.some((book)=> book.borrowedBy2.some((borrowDetails)=> borrowDetails.status!="")) ?
                   <Container 
                     component={Paper}
                     style={{
@@ -461,7 +477,8 @@ const handleBreqClose = () => {
                     </TableRow>)
                    )
               })}
-                  </Container>
+                  </Container>:
+                  <Typography variant="h5" style={{padding:'20px'}}>No Borrow Request History Found!</Typography>
                   } 
                   
                 </>
@@ -549,13 +566,13 @@ const handleBreqClose = () => {
                     return null
                   })}
                   {count.bReq == 0 && (
-                    <Typography variant="h5" style={{margin:'10px'}}>No Borrow Requests Found!</Typography>
+                    <Typography variant="h5" style={{padding:'20px'}}>No Borrow Requests Found!</Typography>
                   )}
                   </> :
                   <>
 
                   {/*User Borrow Req History */}
-                  {books.some((book)=> book.borrowedBy2.some((borrowDetails)=>borrowDetails.borrower==user._id && borrowDetails.status!="")) &&
+                  {books.some((book)=> book.borrowedBy2.some((borrowDetails)=>borrowDetails.borrower==user._id && borrowDetails.status!="")) ?
                   <Container 
                     component={Paper}
                     style={{
@@ -569,11 +586,11 @@ const handleBreqClose = () => {
                       // overflow: 'auto'
                     }}
                   >
-                    {/* <center><Typography variant="h5" style={{padding:'10px', fontWeight:'bold'}}>History</Typography></center> */}
                     <TableHead>
                       <TableCell>Book</TableCell>
                       <TableCell>Requested On</TableCell>
                       <TableCell>Due Date</TableCell>
+                      <TableCell>Total Price</TableCell>
                       <TableCell>Status</TableCell>
                     </TableHead>
               {filteredBooks.map((book) => {
@@ -584,12 +601,14 @@ const handleBreqClose = () => {
                       <TableCell>{book.name}</TableCell>
                       <TableCell>{borrowDetails.borrowedOn}</TableCell>
                       <TableCell>{borrowDetails.dueDate}</TableCell>
+                      <TableCell>${parseInt(book.price) * differenceInDays(borrowDetails.borrowedOn, borrowDetails.dueDate)}</TableCell>
                       {borrowDetails.status=="accepted" && <TableCell><CheckIcon color="success" /></TableCell>}
                       {borrowDetails.status=="rejected" && <TableCell><ClearIcon color="error" /></TableCell>}
                     </TableRow>)
                    )
               })}
-                  </Container>
+                  </Container>:
+                  <Typography variant="h5" style={{padding:'20px'}}>No Borrow Request History Found!</Typography>
                   } 
                 </>
               }
@@ -627,14 +646,16 @@ const handleBreqClose = () => {
                         padding: "20px",
                         minWidth: "250px",
                         flexShrink: "0",
-                        width: '800px'
+                        width: '900px'
                       }}
                     >
                       <h2>{`${book.name} - ${book.availableQuantity} left`}</h2>
                       <TableHead>
                         <TableCell>User Name</TableCell>
                         <TableCell>Requested On</TableCell>
+                        <TableCell>Borrowed On</TableCell>
                         <TableCell>Due Date</TableCell>
+                        <TableCell>Total Price</TableCell>
                         <TableCell>Accept Request</TableCell>
                         <TableCell>Reject Request</TableCell>
                       </TableHead>
@@ -643,7 +664,9 @@ const handleBreqClose = () => {
                           <TableRow>
                             <TableCell>{borrowDetails.borrowerName}</TableCell>
                             <TableCell>{borrowDetails.returnReq.reqDate}</TableCell>
+                            <TableCell>{borrowDetails.borrowedOn}</TableCell>
                             <TableCell>{borrowDetails.dueDate}</TableCell>
+                            <TableCell>${parseInt(book.price) * differenceInDays(borrowDetails.borrowedOn, borrowDetails.dueDate)}</TableCell>
                             <TableCell>
                               <Button
                                 variant="contained"
@@ -690,6 +713,7 @@ const handleBreqClose = () => {
               :
 
               // Admin Return Req History
+              books.some((book)=> book.borrowedBy2.some((borrowDetails)=> borrowDetails.returnReq.status!="")) ?
               <Container 
                     component={Paper}
                     style={{
@@ -702,12 +726,13 @@ const handleBreqClose = () => {
                       // overflow: 'auto'
                     }}
                   >
-                    {/* <center><Typography variant="h5" style={{padding:'10px', fontWeight:'bold'}}>History</Typography></center> */}
                     <TableHead>
                       <TableCell>Book</TableCell>
                       <TableCell>User</TableCell>
                       <TableCell>Requested On</TableCell>
+                      <TableCell>Borrowed On</TableCell>
                       <TableCell>Due Date</TableCell>
+                      <TableCell>Total Price</TableCell>
                       <TableCell>Status</TableCell>
                     </TableHead>
               {filteredBooks.map((book) => {
@@ -717,13 +742,18 @@ const handleBreqClose = () => {
                       <TableCell>{book.name}</TableCell>
                       <TableCell>{borrowDetails.borrowerName}</TableCell>
                       <TableCell>{borrowDetails.returnReq.reqDate}</TableCell>
+                      <TableCell>{borrowDetails.borrowedOn}</TableCell>
                       <TableCell>{borrowDetails.dueDate}</TableCell>
+                      <TableCell>${parseInt(book.price) * differenceInDays(borrowDetails.borrowedOn, borrowDetails.dueDate)}</TableCell>
                       {borrowDetails.returnReq.status=="accepted" && <TableCell><CheckIcon color="success" /></TableCell>}
                       {borrowDetails.returnReq.status=="rejected" && <TableCell><ClearIcon color="error" /></TableCell>}
                     </TableRow>)
                    )
               })}
-              </Container>}
+              </Container>
+              :
+              <Typography variant="h5" style={{padding:'20px'}}>No Return Requests History Found!</Typography>
+              }
             </>
           )}
           {user && !isAdmin && activeTab == "return-requests" && books.length > 0 && (
@@ -751,13 +781,14 @@ const handleBreqClose = () => {
                             padding: "20px 40px",
                             minWidth: "250px",
                             flexShrink: "0",
-                            maxWidth: "700px",
-                            width: '550px'
+                            maxWidth: "750px",
+                            width: '750px'
                           }}
                         >
                           <h2>{`${book.name} - ${book.availableQuantity} left`}</h2>
                           <TableHead>
                             <TableCell>Requested On</TableCell>
+                            <TableCell>Borrowed On</TableCell>
                             <TableCell>Due Date</TableCell>
                             <TableCell>Delete</TableCell>
                           </TableHead>
@@ -766,6 +797,7 @@ const handleBreqClose = () => {
                             borrowDetails.borrower == user._id ? (
                               <TableRow>
                                 <TableCell>{borrowDetails.returnReq.reqDate}</TableCell>
+                                <TableCell>{borrowDetails.borrowedOn}</TableCell>
                                 <TableCell>{borrowDetails.dueDate}</TableCell>
                                 <TableCell>
                                   <IconButton
@@ -791,12 +823,12 @@ const handleBreqClose = () => {
                     return null
                   })}
                   {count.rReq == 0 && (
-                    <Typography variant="h5">No Return Requests Found!</Typography>
+                    <Typography variant="h5" style={{padding:'20px'}}>No Return Requests Found!</Typography>
                   )}
                   </> :
                   <>
                   {/*User Return Req History */}
-                  {books.some((book)=> book.borrowedBy2.some((borrowDetails)=>borrowDetails.borrower==user._id && borrowDetails.returnReq.status!="")) &&
+                  {books.some((book)=> book.borrowedBy2.some((borrowDetails)=>borrowDetails.borrower==user._id && borrowDetails.returnReq.status!="")) ?
                   <Container 
                     component={Paper}
                     style={{
@@ -813,7 +845,9 @@ const handleBreqClose = () => {
                     <TableHead>
                       <TableCell>Book</TableCell>
                       <TableCell>Requested On</TableCell>
+                      <TableCell>Borrowed On</TableCell>
                       <TableCell>Due Date</TableCell>
+                      <TableCell>Total Price</TableCell>
                       <TableCell>Status</TableCell>
                     </TableHead>
               {filteredBooks.map((book) => {
@@ -823,14 +857,18 @@ const handleBreqClose = () => {
                     (<TableRow key={borrowDetails._id}>
                       <TableCell>{book.name}</TableCell>
                       <TableCell>{borrowDetails.returnReq.reqDate}</TableCell>
+                      <TableCell>{borrowDetails.borrowedOn}</TableCell>
                       <TableCell>{borrowDetails.dueDate}</TableCell>
+                      <TableCell>${parseInt(book.price) * differenceInDays(borrowDetails.borrowedOn, borrowDetails.dueDate)}</TableCell>
                       {borrowDetails.returnReq.status=="accepted" && <TableCell><CheckIcon color="success" /></TableCell>}
                       {borrowDetails.returnReq.status=="rejected" && <TableCell><ClearIcon color="error" /></TableCell>}
                     </TableRow>)
                    )
               })}
                   </Container>
-                  }
+                  :
+                  <Typography variant="h5" style={{padding:'20px'}}>No Return Request History Found!</Typography>
+            }
                   </>
                   }
                 </>
@@ -876,7 +914,7 @@ const handleBreqClose = () => {
                                   <p>{book.isbn}</p>
                                   <p>Quantity: {book.quantity}</p>
                                   <p>Available: {book.availableQuantity}</p>
-                                  <p>Price: ${book.price}</p>
+                                  <p>Price: ${book.price} per day</p>
                                 </div>
 
                                 {book.image && (
@@ -896,6 +934,18 @@ const handleBreqClose = () => {
                                   ).dueDate
                                 }
                               </p>
+                              <p>Total Price: ${parseInt(book.price) * 
+                              differenceInDays(
+                                book.borrowedBy2.find(
+                                  (borrowDetails) =>
+                                    borrowDetails.borrower == user._id &&
+                                    borrowDetails.returnReq.status != "accepted"
+                                ).borrowedOn, 
+                                book.borrowedBy2.find(
+                                  (borrowDetails) =>
+                                    borrowDetails.borrower == user._id &&
+                                    borrowDetails.returnReq.status != "accepted"
+                                ).dueDate)}</p>
                               <div className={classes.actionsContainer}>
                                 <Button
                                   variant="contained"
@@ -905,14 +955,14 @@ const handleBreqClose = () => {
                                 >
                                   View
                                 </Button>
-                                <IconButton
+                                {/* <IconButton
                                   variant="contained"
                                   size="small"
                                   color="secondary"
                                   onClick={()=>setOpenBreqDialog(true)}
                                 >
                                   <EditIcon/>
-                                </IconButton>
+                                </IconButton> */}
                               </div>
                               <BorrowReqForm
                                   open={openBreqDialog}

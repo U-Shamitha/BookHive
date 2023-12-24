@@ -9,6 +9,7 @@ import {
     Slide,
 } from "@mui/material"
 import { blue } from "@mui/material/colors"
+import { NotificationManager } from "react-notifications"
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />
@@ -16,12 +17,31 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 export const RegisterDialog = ({ open, handleClose, handleSubmit }) => {
     const [username, setUsername] = useState("")
+    const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [confirmPassword, setConfirmPassword] = useState("")
     const [role, setRole] = useState("")
 
+    const validateEmail = (email) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const isValid = emailRegex.test(email);
+        return isValid
+    }
     const onSubmit = (event) => {
         event.preventDefault()
-        handleSubmit(username, password, role)
+        if(username=="" || email=="" || password=="" || confirmPassword=="" || role==""){
+            NotificationManager.error("Enter all fields")
+        }else{
+            if(validateEmail(email)){
+                if(password==confirmPassword){
+                    handleSubmit(email, username, password, role)
+                }else{
+                    NotificationManager.error("Password did not match")
+                }
+            }else{
+                NotificationManager.error("Enter valid email")
+            } 
+        }
     }
 
     const handleEnterKeyDown = (event) => {
@@ -51,6 +71,17 @@ export const RegisterDialog = ({ open, handleClose, handleSubmit }) => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
+                 <TextField
+                    autoFocus
+                    margin="dense"
+                    id="email"
+                    label="Email"
+                    type="email"
+                    fullWidth
+                    variant="standard"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
                 <TextField
                     margin="dense"
                     id="password"
@@ -60,6 +91,16 @@ export const RegisterDialog = ({ open, handleClose, handleSubmit }) => {
                     variant="standard"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                />
+                <TextField
+                    margin="dense"
+                    id="confirmPassword"
+                    label="Confirm Password"
+                    type="password"
+                    fullWidth
+                    variant="standard"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <div style={{marginTop:"10px", display:'flex', justifyContent:'space-evenly'}}>
                     <span>

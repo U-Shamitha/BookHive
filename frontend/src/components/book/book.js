@@ -133,7 +133,7 @@ export const Book = () => {
                     <KeyboardArrowLeft />
                     </IconButton>
                     <Tabs
-                        // variant="scrollable"
+                        variant="scrollable"
                         scrollButtons="auto"
                         aria-label="Horizontal Tabs Scrollable"
                         value={openTab}
@@ -141,7 +141,7 @@ export const Book = () => {
                         textColor="primary"
                         onChange={(e, tabIndex) => {
                             setOpenTab(tabIndex)
-                            if (book && tabIndex > 0) {
+                            if (book && (tabIndex ==1 || tabIndex==2)) {
                                 setChartOptions(
                                     makeChartOptions(
                                         tabIndex,
@@ -213,8 +213,8 @@ export const Book = () => {
                                 <TableHead>
                                     <TableCell>Borrower</TableCell>
                                     <TableCell>Borrowed On</TableCell>
-                                    <TableCell>Returned On</TableCell>
                                     <TableCell>Due Date</TableCell>
+                                    <TableCell>Returned On</TableCell>
                                 </TableHead>
                                 <TableBody>
                                     {book.borrowedBy2.slice().reverse().map((borrowDetail) =>
@@ -222,8 +222,8 @@ export const Book = () => {
                                         <TableRow>                                            
                                             <TableCell>{borrowDetail['borrowerName']}</TableCell>
                                             <TableCell>{borrowDetail['borrowedOn']}</TableCell>
-                                            <TableCell>{borrowDetail['returnedOn']}</TableCell>
                                             <TableCell>{borrowDetail['dueDate']}</TableCell>
+                                            <TableCell>{borrowDetail['returnedOn']}</TableCell>
                                         </TableRow>
                                     :
                                     null

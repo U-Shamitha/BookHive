@@ -1,7 +1,7 @@
 .wrapper {
     margin: 2em auto 0;
     padding: 1em;
-    max-width: 700px;
+    max-width: 750px;
 }
 
 .btnContainer {
@@ -20,6 +20,7 @@
 }
 
 .scrollView {
+    width:'fit-content';
     max-height: 320px !important;
     overflow: auto;
     /* border: 1px solid #ccc;  */

@@ -63,19 +63,20 @@ export const BookForm = () => {
             if (bookIsbn) {
                 const newPrice = parseInt(book.price, 10)
                 const newQuantity = parseInt(book.quantity, 10)
-                let newPriceHistory = book.priceHistory.slice()
-                let newQuantityHistory = book.quantityHistory.slice()
+                let newPriceHistory = [...book.priceHistory];
+                let newQuantityHistory = [...book.quantityHistory];
+
                 if (
                     newPriceHistory.length === 0 ||
                     newPriceHistory[newPriceHistory.length - 1].price !== newPrice
                 ) {
-                    newPriceHistory.push({ price: newPrice, modifiedAt: dayjs().utc().format() })
+                    newPriceHistory.push({ price: newPrice, modifiedAt: new Date().toLocaleString("en-Us", {timeZone:'Asia/Kolkata'}) })
                 }
                 if (
                     newQuantityHistory.length === 0 ||
                     newQuantityHistory[newQuantityHistory.length - 1].quantity !== newQuantity
                 ) {
-                    newQuantityHistory.push({ quantity: newQuantity, modifiedAt: dayjs().utc().format() })
+                    newQuantityHistory.push({ quantity: newQuantity, modifiedAt: new Date().toLocaleString("en-Us", {timeZone:'Asia/Kolkata'}) })
                 }
                 BackendApi.book
                     .patchBookByIsbn(bookIsbn, {

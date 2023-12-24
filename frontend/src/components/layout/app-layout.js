@@ -42,8 +42,8 @@ export const AppLayout = () => {
         setAnchorElUser(null)
     }
 
-    const handleRegisterSubmit = (username, password, role) => {
-        registerUser(username, password, role)
+    const handleRegisterSubmit = (email, username, password, role) => {
+        registerUser(email, username, password, role)
         setOpenRegisterDialog(false)
     }
 
@@ -51,8 +51,8 @@ export const AppLayout = () => {
         setOpenRegisterDialog(false)
     }
 
-    const handleLoginSubmit = (username, password) => {
-        loginUser(username, password)
+    const handleLoginSubmit = (email, password) => {
+        loginUser(email, password)
         setOpenLoginDialog(false)
     }
 

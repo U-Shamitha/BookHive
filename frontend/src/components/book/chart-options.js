@@ -1,4 +1,4 @@
-import * as dayjs from "dayjs"
+import dayjs from "dayjs"
 
 export const makeChartOptions = (index, chartData) => {
     const options = {
@@ -9,7 +9,7 @@ export const makeChartOptions = (index, chartData) => {
             text: null,
         },
         xAxis: {
-            categories: chartData?.map((item) => dayjs(item.modifiedAt).format("lll")),
+            categories: chartData?.map((item) => new Date(item.modifiedAt).toLocaleString("en-US",{timeZone:'Asia/Kolkata'})),
         },
         yAxis: {
             labels: {

@@ -1,6 +1,5 @@
-// const serverUrl = "https://bookhive-fe.onrender.com"
-// const serverUrl = "http://localhost:8000"
-const serverUrl = "https://localhost:8080"
+const serverUrl = "https://bookhive-fe.onrender.com"
+// const serverUrl = "https://localhost:8080"
 
 const BookApi = {
   getAllBooks: async () => {
@@ -12,12 +11,20 @@ const BookApi = {
     return res.json()
   },
   addBook: async (data) => {
+    console.log(data)
     const formData = new FormData();
 
     // Iterate over each field in the data object and append it to the FormData
     for (const [key, value] of Object.entries(data)) {
-      formData.append(key, value);
+      if(key=="priceHistory" || key=="quantityHistory"){
+        value.forEach(item => {
+          formData.append(`${key}[]`, JSON.stringify(item));
+        });
+      }else{
+        formData.append(key, value);
+      }
     }
+    console.log(formData)
 
     const res = await fetch(`${serverUrl}/v1/book`, {
       method: "POST",
