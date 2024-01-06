@@ -129,13 +129,13 @@ app.use((err, req, res, next) => {
 
 connectDb()
   .then(async () => {
-    const admin = await UserModel.findOne({ username: "admin" })
+    const admin = await UserModel.findOne({ email: "admin@gmail.com" })
     if (admin == null) {
-      await UserModel.create({ username: "admin", password: "admin", role: "admin" })
+      await UserModel.create({ email: "admin@gmail.com", username: "admin", password: "admin", role: "admin" })
     }
-    const guest = await UserModel.findOne({ username: "guest" })
+    const guest = await UserModel.findOne({ email: "guest@gmail.com" })
     if (guest == null) {
-      await UserModel.create({ username: "guest", password: "guest", role: "guest" })
+      await UserModel.create({ email: "guest@gmail.com", username: "guest", password: "guest", role: "guest" })
     }
   })
   .then(() => {
