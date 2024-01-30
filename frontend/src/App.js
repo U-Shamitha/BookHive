@@ -1,5 +1,5 @@
 import React, { Suspense } from "react"
-import { HashRouter as Router } from "react-router-dom"
+import { BrowserRouter as Router } from "react-router-dom"
 import { Container } from "@mui/material"
 import { NotificationContainer } from "react-notifications"
 import { AppLayout } from "./components/layout/app-layout"
